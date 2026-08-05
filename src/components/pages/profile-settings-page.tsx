@@ -51,7 +51,7 @@ export function ProfileSettingsPage() {
             Your profile
           </h1>
           <p className="mt-2 text-rose-950/55">
-            Manage how you appear across Togetherly.
+            Manage how you appear across Twogetherly.
           </p>
         </header>
 

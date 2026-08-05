@@ -8,7 +8,10 @@ import { CreateGoal } from "@/components/ui/create-goal";
 import { ConfirmtaionModal } from "@/components/ui/confirmtaion-modal";
 import { EditGoalForm } from "@/components/ui/edit-goal-form";
 import { GoalCard } from "@/components/ui/goal-card";
-import { GoalHistoryModal, type GoalTransaction } from "@/components/ui/goal-history-modal";
+import {
+  GoalHistoryModal,
+  type GoalTransaction,
+} from "@/components/ui/goal-history-modal";
 import { InvitePartnerModal } from "@/components/ui/invite-partner-modal";
 import { JourneyMap } from "@/components/ui/journey-map";
 import type { JourneyMemory } from "@/components/ui/journey-map";
@@ -39,7 +42,12 @@ const initialGoals: Goal[] = [
     startDate: "2026-01-15",
     deadline: "2027-06-12",
     diaryEntries: [
-      { message: "I loved our quiet coffee date this morning. Here's to more slow Sundays together.", date: "August 5, 2026", location: "Makati City" },
+      {
+        message:
+          "I loved our quiet coffee date this morning. Here's to more slow Sundays together.",
+        date: "August 5, 2026",
+        location: "Makati City",
+      },
     ],
   },
   {
@@ -51,7 +59,11 @@ const initialGoals: Goal[] = [
     startDate: "2025-09-01",
     deadline: "2028-12-31",
     diaryEntries: [
-      { message: "We walked past the sweetest little house today and imagined making one ours.", date: "July 22, 2026" },
+      {
+        message:
+          "We walked past the sweetest little house today and imagined making one ours.",
+        date: "July 22, 2026",
+      },
     ],
   },
   {
@@ -67,14 +79,38 @@ const initialGoals: Goal[] = [
 
 const initialTransactions: Record<number, GoalTransaction[]> = {
   1: [
-    { id: 1001, amount: 10_000, author: "Freiz", note: "For our dream venue.", createdAt: "August 3, 2026 · 6:20 PM" },
-    { id: 1002, amount: 5_600, author: "You", note: "A little closer today!", createdAt: "July 28, 2026 · 9:15 AM" },
+    {
+      id: 1001,
+      amount: 10_000,
+      author: "Freiz",
+      note: "For our dream venue.",
+      createdAt: "August 3, 2026 · 6:20 PM",
+    },
+    {
+      id: 1002,
+      amount: 5_600,
+      author: "You",
+      note: "A little closer today!",
+      createdAt: "July 28, 2026 · 9:15 AM",
+    },
   ],
   2: [
-    { id: 2001, amount: 25_000, author: "You", note: "Monthly home fund contribution.", createdAt: "August 1, 2026 · 8:00 AM" },
+    {
+      id: 2001,
+      amount: 25_000,
+      author: "You",
+      note: "Monthly home fund contribution.",
+      createdAt: "August 1, 2026 · 8:00 AM",
+    },
   ],
   3: [
-    { id: 3001, amount: 7_500, author: "Freiz", note: "Flights are almost covered!", createdAt: "July 30, 2026 · 7:45 PM" },
+    {
+      id: 3001,
+      amount: 7_500,
+      author: "Freiz",
+      note: "Flights are almost covered!",
+      createdAt: "July 30, 2026 · 7:45 PM",
+    },
   ],
 };
 
@@ -92,7 +128,9 @@ export function DashboardPage() {
   const partnerName = "Freiz";
   const [goals, setGoals] = useState(initialGoals);
   const [isCreateGoalOpen, setIsCreateGoalOpen] = useState(false);
-  const [contributionGoalId, setContributionGoalId] = useState<number | null>(null);
+  const [contributionGoalId, setContributionGoalId] = useState<number | null>(
+    null,
+  );
   const [historyGoalId, setHistoryGoalId] = useState<number | null>(null);
   const [editGoalId, setEditGoalId] = useState<number | null>(null);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
@@ -119,14 +157,20 @@ export function DashboardPage() {
 
   const addContribution = async (values: addContributionFormValues) => {
     if (contributionGoalId === null) return;
-    const goalName = goals.find((goal) => goal.id === contributionGoalId)?.name ?? "Goal";
-    const receiptUrl = values.photo ? await readFileAsDataUrl(values.photo) : undefined;
+    const goalName =
+      goals.find((goal) => goal.id === contributionGoalId)?.name ?? "Goal";
+    const receiptUrl = values.photo
+      ? await readFileAsDataUrl(values.photo)
+      : undefined;
     setGoals((currentGoals) =>
       currentGoals.map((goal) => {
         if (goal.id !== contributionGoalId) return goal;
         return {
           ...goal,
-          currentAmount: Math.min(goal.currentAmount + values.amount, goal.targetAmount),
+          currentAmount: Math.min(
+            goal.currentAmount + values.amount,
+            goal.targetAmount,
+          ),
         };
       }),
     );
@@ -141,9 +185,14 @@ export function DashboardPage() {
     };
     setTransactions((currentTransactions) => ({
       ...currentTransactions,
-      [contributionGoalId]: [transaction, ...(currentTransactions[contributionGoalId] ?? [])],
+      [contributionGoalId]: [
+        transaction,
+        ...(currentTransactions[contributionGoalId] ?? []),
+      ],
     }));
-    setActivityMessage(`₱${values.amount.toLocaleString()} was added to ${goalName}.`);
+    setActivityMessage(
+      `₱${values.amount.toLocaleString()} was added to ${goalName}.`,
+    );
   };
 
   const contributionGoal = goals.find((goal) => goal.id === contributionGoalId);
@@ -152,22 +201,27 @@ export function DashboardPage() {
 
   const saveGoalChanges = (values: editGoalFormValues) => {
     if (editGoalId === null) return;
-    setGoals((currentGoals) => currentGoals.map((goal) =>
-      goal.id === editGoalId ? { ...goal, ...values } : goal,
-    ));
+    setGoals((currentGoals) =>
+      currentGoals.map((goal) =>
+        goal.id === editGoalId ? { ...goal, ...values } : goal,
+      ),
+    );
     setActivityMessage(`${values.name} was updated.`);
     setEditGoalId(null);
   };
 
   const signOut = () => {
-    sessionStorage.removeItem("togetherly:partner-linked");
+    sessionStorage.removeItem("twogetherly:partner-linked");
     navigate("/login", { replace: true });
   };
 
   const archiveGoal = () => {
     if (archiveGoalId === null) return;
-    const goalName = goals.find((goal) => goal.id === archiveGoalId)?.name ?? "Goal";
-    setGoals((currentGoals) => currentGoals.filter((goal) => goal.id !== archiveGoalId));
+    const goalName =
+      goals.find((goal) => goal.id === archiveGoalId)?.name ?? "Goal";
+    setGoals((currentGoals) =>
+      currentGoals.filter((goal) => goal.id !== archiveGoalId),
+    );
     setArchiveGoalId(null);
     setActivityMessage(`${goalName} was archived.`);
   };
@@ -190,7 +244,7 @@ export function DashboardPage() {
               <span className="flex size-9 items-center justify-center rounded-xl bg-rose-500 text-white">
                 <Heart className="size-5 fill-current" aria-hidden="true" />
               </span>
-              Togetherly
+              Twogetherly
             </div>
             <h1 className="text-3xl font-semibold tracking-tight text-rose-950 sm:text-4xl">
               Shared goals
@@ -200,10 +254,20 @@ export function DashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button variant="ghost" size="lg" className="h-11 text-rose-700 hover:bg-rose-100" onClick={() => setIsSignOutOpen(true)}>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="h-11 text-rose-700 hover:bg-rose-100"
+              onClick={() => setIsSignOutOpen(true)}
+            >
               <LogOut aria-hidden="true" /> Sign out
             </Button>
-            <Button variant="outline" size="lg" className="h-11 border-rose-200 bg-white text-rose-700" onClick={() => setIsInviteOpen(true)}>
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-11 border-rose-200 bg-white text-rose-700"
+              onClick={() => setIsInviteOpen(true)}
+            >
               <UserPlus aria-hidden="true" /> Invite partner
             </Button>
             <Button
@@ -311,7 +375,11 @@ export function DashboardPage() {
       <AddContributionModal
         isOpen={Boolean(contributionGoal)}
         goalName={contributionGoal?.name ?? ""}
-        remainingAmount={contributionGoal ? contributionGoal.targetAmount - contributionGoal.currentAmount : 0}
+        remainingAmount={
+          contributionGoal
+            ? contributionGoal.targetAmount - contributionGoal.currentAmount
+            : 0
+        }
         partnerName={partnerName}
         onClose={() => setContributionGoalId(null)}
         onAddContribution={addContribution}
@@ -319,13 +387,22 @@ export function DashboardPage() {
       <GoalHistoryModal
         isOpen={Boolean(historyGoal)}
         goalName={historyGoal?.name ?? ""}
-        transactions={historyGoal ? transactions[historyGoal.id] ?? [] : []}
+        transactions={historyGoal ? (transactions[historyGoal.id] ?? []) : []}
         onClose={() => setHistoryGoalId(null)}
       />
       <EditGoalForm
         key={editGoal?.id ?? "edit-goal"}
         isOpen={Boolean(editGoal)}
-        goal={editGoal ?? { name: "", description: "", targetAmount: 0, currentAmount: 0, startDate: "", deadline: "" }}
+        goal={
+          editGoal ?? {
+            name: "",
+            description: "",
+            targetAmount: 0,
+            currentAmount: 0,
+            startDate: "",
+            deadline: "",
+          }
+        }
         onSave={saveGoalChanges}
         onCancel={() => setEditGoalId(null)}
       />
@@ -336,7 +413,7 @@ export function DashboardPage() {
       />
       <ConfirmtaionModal
         isOpen={isSignOutOpen}
-        title="Sign out of Togetherly?"
+        title="Sign out of Twogetherly?"
         description="You'll return to the login page and will need to sign in again to access your shared space."
         confirmLabel="Sign out"
         tone="danger"

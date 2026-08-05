@@ -133,7 +133,7 @@ export function LoginForm({ form, onSubmit, successMessage }: LoginFormProps) {
           </Button>
 
           <p className="text-center text-sm text-rose-950/55">
-            New to Togetherly?{" "}
+            New to Twogetherly?{" "}
             <Link className="font-semibold text-rose-600 hover:text-rose-700" to="/sign-up">
               Create an account
             </Link>

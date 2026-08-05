@@ -98,7 +98,7 @@ export function InvitePartnerModal({
               <div className="space-y-2">
                 <label htmlFor="invite-email" className="text-sm font-medium text-rose-950">Partner's email</label>
                 <input id="invite-email" type="email" autoFocus placeholder="partner@example.com" aria-invalid={Boolean(errors.email)} className="h-11 w-full rounded-xl border border-rose-100 bg-rose-50/40 px-3 outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-100 aria-invalid:border-red-500" {...register("email")} />
-                <p className="text-xs text-rose-950/45">They'll receive a link to join your shared Togetherly space.</p>
+                <p className="text-xs text-rose-950/45">They'll receive a link to join your shared Twogetherly space.</p>
                 {errors.email && <p className="text-sm text-red-600" role="alert">{errors.email.message}</p>}
               </div>
             ) : (

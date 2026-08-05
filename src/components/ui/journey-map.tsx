@@ -49,9 +49,10 @@ export function JourneyMap({ goals, partnerName }: JourneyMapProps) {
   const dragMap = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!isDragging) return;
     const nextY = dragStart.current.mapY + event.clientY - dragStart.current.pointerY;
+    const minimumY = event.currentTarget.clientHeight - 960;
     setMapPosition({
       x: 0,
-      y: Math.min(Math.max(nextY, isExpanded ? -128 : -576), 0),
+      y: Math.min(Math.max(nextY, minimumY), 0),
     });
   };
   const stopDragging = () => setIsDragging(false);
@@ -63,7 +64,7 @@ export function JourneyMap({ goals, partnerName }: JourneyMapProps) {
   return (
     <section className="relative overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-xl shadow-rose-950/5" aria-labelledby="journey-map-title">
       <div
-        className={`relative touch-none select-none overflow-hidden bg-linear-to-b from-pink-100 via-rose-50 to-red-100 transition-[height] duration-500 ${isExpanded ? "h-[52rem]" : "h-[24rem]"} ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+        className={`relative touch-none select-none overflow-hidden bg-linear-to-b from-pink-100 via-rose-50 to-red-100 transition-[height] duration-500 ${isExpanded ? "h-[52rem]" : "h-[32rem] sm:h-[24rem]"} ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
         onPointerDown={startDragging}
         onPointerMove={dragMap}
         onPointerUp={stopDragging}

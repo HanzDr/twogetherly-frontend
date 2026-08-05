@@ -40,7 +40,7 @@ export function SignUpForm({ form, onSubmit, successMessage }: SignUpFormProps) 
         </div>
         <div>
           <CardTitle className="text-2xl font-semibold tracking-tight text-rose-950">
-            Join Togetherly
+            Join Twogetherly
           </CardTitle>
           <CardDescription className="mt-2 text-rose-950/55">
             Create your account and make every moment feel closer.

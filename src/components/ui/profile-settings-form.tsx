@@ -47,7 +47,7 @@ export function ProfileSettingsForm({ form, onSubmit, successMessage }: ProfileS
             Profile details
           </CardTitle>
           <CardDescription className="mt-2 text-rose-950/55">
-            Keep your personal details and Togetherly profile up to date.
+            Keep your personal details and Twogetherly profile up to date.
           </CardDescription>
         </div>
       </CardHeader>

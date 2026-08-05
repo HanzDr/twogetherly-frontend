@@ -18,7 +18,7 @@ export function PartnerOnboardingPage() {
   const [status, setStatus] = useState("");
 
   const finishSetup = () => {
-    sessionStorage.setItem("togetherly:partner-linked", "true");
+    sessionStorage.setItem("twogetherly:partner-linked", "true");
     navigate("/dashboard", { replace: true });
   };
 
@@ -91,7 +91,7 @@ export function PartnerOnboardingPage() {
                 {mode === "create" ? <Sparkles className="text-rose-500" /> : <Link2 className="text-rose-500" />}
                 {mode === "create" ? "Create your shared space" : "Join a shared space"}
               </CardTitle>
-              <CardDescription>{mode === "create" ? "You can invite your partner now or share the code later." : "Ask your partner for the invite code shown in their Togetherly space."}</CardDescription>
+              <CardDescription>{mode === "create" ? "You can invite your partner now or share the code later." : "Ask your partner for the invite code shown in their Twogetherly space."}</CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-5" onSubmit={mode === "create" ? createSpace : joinSpace} noValidate>

@@ -30,7 +30,7 @@ export function SignUpPage() {
       email: values.email,
     });
     setSuccessMessage(`Thanks, ${values.name}! Your account details were submitted.`);
-    sessionStorage.removeItem("togetherly:partner-linked");
+    sessionStorage.removeItem("twogetherly:partner-linked");
     navigate("/partner-setup");
   };
 
