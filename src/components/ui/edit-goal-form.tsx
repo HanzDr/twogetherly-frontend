@@ -1,10 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Save, X } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { CalendarDays, Pencil, Save, X } from "lucide-react";
 import { useEffect } from "react";
-import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
+import { Controller, useForm, useWatch, type SubmitHandler } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { editGoalFormSchema, type editGoalFormValues } from "@/schemas/goal-schema";
 
 type EditGoalFormProps = {
@@ -29,6 +32,7 @@ export function EditGoalForm({ isOpen, goal, onSave, onCancel }: EditGoalFormPro
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors, isDirty, isSubmitting },
   } = form;
   const description = useWatch({ control: form.control, name: "description" });
@@ -95,13 +99,41 @@ export function EditGoalForm({ isOpen, goal, onSave, onCancel }: EditGoalFormPro
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
-                <label htmlFor="edit-goal-start-date" className="text-sm font-medium text-rose-950">Start date <span className="font-normal text-rose-950/40">(optional)</span></label>
-                <input id="edit-goal-start-date" type="date" aria-invalid={Boolean(errors.startDate)} className="h-11 w-full rounded-xl border border-rose-100 bg-rose-50/40 px-3 text-rose-950 outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-100 aria-invalid:border-red-500" {...register("startDate")} />
+                <label className="text-sm font-medium text-rose-950">Start date <span className="font-normal text-rose-950/40">(optional)</span></label>
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => (
+                    <Popover>
+                      <PopoverTrigger render={<Button type="button" variant="outline" className="h-11 w-full justify-start border-rose-100 bg-rose-50/40 px-3 font-normal text-rose-950 hover:bg-rose-50" />}>
+                        <CalendarDays className="text-rose-400" />
+                        {field.value ? format(parseISO(field.value), "PPP") : <span className="text-rose-950/35">Choose start date</span>}
+                      </PopoverTrigger>
+                      <PopoverContent align="start" className="w-auto border-rose-100 p-0">
+                        <Calendar mode="single" selected={field.value ? parseISO(field.value) : undefined} onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")} />
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                />
                 {errors.startDate && <p className="text-sm text-red-600" role="alert">{errors.startDate.message}</p>}
               </div>
               <div className="space-y-2">
-                <label htmlFor="edit-goal-deadline" className="text-sm font-medium text-rose-950">Expected completion <span className="font-normal text-rose-950/40">(optional)</span></label>
-                <input id="edit-goal-deadline" type="date" min={new Date().toISOString().split("T")[0]} aria-invalid={Boolean(errors.deadline)} className="h-11 w-full rounded-xl border border-rose-100 bg-rose-50/40 px-3 text-rose-950 outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-100 aria-invalid:border-red-500" {...register("deadline")} />
+                <label className="text-sm font-medium text-rose-950">Expected completion <span className="font-normal text-rose-950/40">(optional)</span></label>
+                <Controller
+                  name="deadline"
+                  control={control}
+                  render={({ field }) => (
+                    <Popover>
+                      <PopoverTrigger render={<Button type="button" variant="outline" className="h-11 w-full justify-start border-rose-100 bg-rose-50/40 px-3 font-normal text-rose-950 hover:bg-rose-50" />}>
+                        <CalendarDays className="text-rose-400" />
+                        {field.value ? format(parseISO(field.value), "PPP") : <span className="text-rose-950/35">Choose deadline</span>}
+                      </PopoverTrigger>
+                      <PopoverContent align="start" className="w-auto border-rose-100 p-0">
+                        <Calendar mode="single" selected={field.value ? parseISO(field.value) : undefined} onSelect={(date) => field.onChange(date ? format(date, "yyyy-MM-dd") : "")} disabled={{ before: new Date() }} />
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                />
                 {errors.deadline && <p className="text-sm text-red-600" role="alert">{errors.deadline.message}</p>}
               </div>
             </div>
