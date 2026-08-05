@@ -10,6 +10,8 @@ import { EditGoalForm } from "@/components/ui/edit-goal-form";
 import { GoalCard } from "@/components/ui/goal-card";
 import { GoalHistoryModal, type GoalTransaction } from "@/components/ui/goal-history-modal";
 import { InvitePartnerModal } from "@/components/ui/invite-partner-modal";
+import { JourneyMap } from "@/components/ui/journey-map";
+import type { JourneyMemory } from "@/components/ui/journey-map";
 import type {
   addContributionFormValues,
   createGoalFormValues,
@@ -24,6 +26,7 @@ type Goal = {
   targetAmount: number;
   startDate?: string;
   deadline?: string;
+  diaryEntries?: JourneyMemory[];
 };
 
 const initialGoals: Goal[] = [
@@ -35,6 +38,9 @@ const initialGoals: Goal[] = [
     targetAmount: 150_000,
     startDate: "2026-01-15",
     deadline: "2027-06-12",
+    diaryEntries: [
+      { message: "I loved our quiet coffee date this morning. Here's to more slow Sundays together.", date: "August 5, 2026", location: "Makati City" },
+    ],
   },
   {
     id: 2,
@@ -44,6 +50,9 @@ const initialGoals: Goal[] = [
     targetAmount: 500_000,
     startDate: "2025-09-01",
     deadline: "2028-12-31",
+    diaryEntries: [
+      { message: "We walked past the sweetest little house today and imagined making one ours.", date: "July 22, 2026" },
+    ],
   },
   {
     id: 3,
@@ -271,6 +280,10 @@ export function DashboardPage() {
         >
           {activityMessage}
         </p>
+
+        <div className="mb-8">
+          <JourneyMap goals={goals} partnerName={partnerName} />
+        </div>
 
         <section
           className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3"
