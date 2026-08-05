@@ -1,0 +1,70 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Heart, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+
+import { LoginForm } from "@/components/ui/login-form";
+import {
+  loginFormSchema,
+  type LoginFormValues,
+} from "@/schemas/auth-schema";
+
+export function LoginPage() {
+  const [successMessage, setSuccessMessage] = useState("");
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
+  const handleLogin: SubmitHandler<LoginFormValues> = (values) => {
+    setSuccessMessage("");
+
+    // Replace this with the application's authentication API call.
+    console.info("Login submitted", {
+      email: values.email,
+      rememberMe: values.rememberMe,
+    });
+    setSuccessMessage(`Welcome back! Login submitted for ${values.email}.`);
+  };
+
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-linear-to-br from-rose-50 via-white to-pink-100 px-5 py-10 sm:px-8">
+      <div className="pointer-events-none absolute -left-28 -top-28 size-80 rounded-full bg-rose-300/35 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-36 -right-24 size-96 rounded-full bg-pink-300/40 blur-3xl" />
+
+      <div className="relative mx-auto grid min-h-[calc(100vh-5rem)] max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="hidden max-w-xl lg:block">
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/70 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm">
+            <Sparkles className="size-4" aria-hidden="true" />
+            Made for meaningful connections
+          </div>
+          <h1 className="text-6xl font-semibold leading-[1.05] tracking-[-0.05em] text-rose-950">
+            Life is better when we’re
+            <span className="text-rose-500"> together.</span>
+          </h1>
+          <p className="mt-6 max-w-lg text-lg leading-8 text-rose-950/60">
+            Share moments, make plans, and stay close to your favorite people—all in one warm little corner of the internet.
+          </p>
+          <div className="mt-10 flex items-center gap-3 text-sm font-medium text-rose-950/50">
+            <span className="flex -space-x-2" aria-hidden="true">
+              {["bg-rose-300", "bg-pink-400", "bg-red-300"].map((color) => (
+                <span key={color} className={`flex size-9 items-center justify-center rounded-full border-2 border-white ${color}`}>
+                  <Heart className="size-4 fill-white text-white" />
+                </span>
+              ))}
+            </span>
+            A place for your people
+          </div>
+        </section>
+
+        <section className="flex justify-center lg:justify-end" aria-label="Login">
+          <LoginForm form={form} onSubmit={handleLogin} successMessage={successMessage} />
+        </section>
+      </div>
+    </main>
+  );
+}
