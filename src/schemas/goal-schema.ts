@@ -1,12 +1,25 @@
 import { z } from "zod";
 
-export const createGoalFormSchema = z.object({
-  name: z.string().trim().min(2, "Goal name must be at least 2 characters"),
-  description: z.string().trim().max(160, "Keep the description under 160 characters"),
-  targetAmount: z
-    .number({ invalid_type_error: "Enter a valid target amount" })
-    .positive("Target amount must be greater than zero"),
-});
+export const createGoalFormSchema = z
+  .object({
+    name: z.string().trim().min(2, "Goal name must be at least 2 characters"),
+    description: z.string().trim().max(160, "Keep the description under 160 characters"),
+    targetAmount: z
+      .number({ invalid_type_error: "Enter a valid target amount" })
+      .positive("Target amount must be greater than zero"),
+    startDate: z
+      .string()
+      .refine((value) => !value || !Number.isNaN(Date.parse(value)), "Enter a valid start date")
+      .optional(),
+    deadline: z
+      .string()
+      .refine((value) => !value || !Number.isNaN(Date.parse(value)), "Enter a valid deadline")
+      .optional(),
+  })
+  .refine(
+    (values) => !values.startDate || !values.deadline || values.startDate <= values.deadline,
+    { message: "Deadline must be on or after the start date", path: ["deadline"] },
+  );
 
 export type createGoalFormValues = z.infer<typeof createGoalFormSchema>;
 

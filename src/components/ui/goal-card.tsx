@@ -1,4 +1,4 @@
-import { ArrowUpRight, CalendarDays, CalendarRange, CircleDollarSign, Pencil } from "lucide-react";
+import { Archive, ArrowUpRight, CalendarDays, CalendarRange, CheckCircle2, CircleDollarSign, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ type GoalCardProps = {
   onViewMore?: () => void;
   onEdit?: () => void;
   onAddContribution?: () => void;
+  onArchive?: () => void;
 };
 
 function formatAmount(amount: number) {
@@ -39,13 +40,15 @@ export function GoalCard({
   onViewMore,
   onEdit,
   onAddContribution,
+  onArchive,
 }: GoalCardProps) {
   const percentage = targetAmount > 0
     ? Math.min(Math.max((currentAmount / targetAmount) * 100, 0), 100)
     : 0;
+  const isComplete = percentage >= 100;
 
   return (
-    <Card className="gap-5 border-rose-100 bg-white py-5 shadow-sm ring-rose-100 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-rose-950/5">
+    <Card className={`gap-5 py-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl ${isComplete ? "border-emerald-200 bg-linear-to-br from-emerald-50 to-white ring-emerald-200 hover:shadow-emerald-950/5" : "border-rose-100 bg-white ring-rose-100 hover:shadow-rose-950/5"}`}>
       <CardHeader className="gap-2">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -56,8 +59,9 @@ export function GoalCard({
               </CardDescription>
             )}
           </div>
-          <span className="shrink-0 rounded-full bg-rose-50 px-3 py-1 text-sm font-semibold text-rose-600">
-            {Math.round(percentage)}%
+          <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ${isComplete ? "bg-emerald-100 text-emerald-700" : "bg-rose-50 text-rose-600"}`}>
+            {isComplete && <CheckCircle2 className="size-4" aria-hidden="true" />}
+            {isComplete ? "Completed" : `${Math.round(percentage)}%`}
           </span>
         </div>
       </CardHeader>
@@ -71,7 +75,7 @@ export function GoalCard({
           <p className="text-xs font-medium uppercase tracking-wider text-rose-950/40">Progress</p>
         </div>
         <div
-          className="h-3 overflow-hidden rounded-full bg-rose-100"
+          className={`h-3 overflow-hidden rounded-full ${isComplete ? "bg-emerald-100" : "bg-rose-100"}`}
           role="progressbar"
           aria-label={`${name} progress`}
           aria-valuemin={0}
@@ -79,12 +83,12 @@ export function GoalCard({
           aria-valuenow={Math.round(percentage)}
         >
           <div
-            className="h-full rounded-full bg-linear-to-r from-rose-400 to-pink-600 transition-all duration-500"
+            className={`h-full rounded-full transition-all duration-500 ${isComplete ? "bg-linear-to-r from-emerald-400 to-teal-600" : "bg-linear-to-r from-rose-400 to-pink-600"}`}
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <p className="text-sm text-rose-950/45">
-          {formatAmount(Math.max(targetAmount - currentAmount, 0))} remaining to reach this goal
+        <p className={`text-sm ${isComplete ? "font-medium text-emerald-700" : "text-rose-950/45"}`}>
+          {isComplete ? "Goal reached — you did it together!" : `${formatAmount(Math.max(targetAmount - currentAmount, 0))} remaining to reach this goal`}
         </p>
         {deadline && (
           <p className="flex items-center gap-2 text-sm font-medium text-rose-600">
@@ -100,7 +104,7 @@ export function GoalCard({
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-wrap gap-2 border-rose-100 bg-rose-50/50">
+      <CardFooter className={`flex flex-wrap gap-2 ${isComplete ? "border-emerald-100 bg-emerald-50/60" : "border-rose-100 bg-rose-50/50"}`}>
         <Button variant="ghost" onClick={onViewMore} className="text-rose-700 hover:bg-rose-100">
           <ArrowUpRight aria-hidden="true" />
           View more
@@ -109,10 +113,15 @@ export function GoalCard({
           <Pencil aria-hidden="true" />
           Edit
         </Button>
-        <Button onClick={onAddContribution} className="ml-auto bg-rose-500 text-white hover:bg-rose-600">
-          <CircleDollarSign aria-hidden="true" />
-          Add contribution
-        </Button>
+        {isComplete ? (
+          <Button onClick={onArchive} className="ml-auto bg-emerald-600 text-white hover:bg-emerald-700">
+            <Archive aria-hidden="true" /> Archive goal
+          </Button>
+        ) : (
+          <Button onClick={onAddContribution} className="ml-auto bg-rose-500 text-white hover:bg-rose-600">
+            <CircleDollarSign aria-hidden="true" /> Add contribution
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

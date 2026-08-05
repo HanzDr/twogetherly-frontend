@@ -49,7 +49,7 @@ const initialGoals: Goal[] = [
     id: 3,
     name: "Anniversary Getaway",
     description: "A week away to celebrate another wonderful year together.",
-    currentAmount: 42_500,
+    currentAmount: 50_000,
     targetAmount: 50_000,
     startDate: "2026-07-20",
     deadline: "2026-11-20",
@@ -88,6 +88,7 @@ export function DashboardPage() {
   const [editGoalId, setEditGoalId] = useState<number | null>(null);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isSignOutOpen, setIsSignOutOpen] = useState(false);
+  const [archiveGoalId, setArchiveGoalId] = useState<number | null>(null);
   const [transactions, setTransactions] = useState(initialTransactions);
   const [activityMessage, setActivityMessage] = useState(
     "Welcome back! Your shared goals are looking great.",
@@ -152,6 +153,14 @@ export function DashboardPage() {
   const signOut = () => {
     sessionStorage.removeItem("togetherly:partner-linked");
     navigate("/login", { replace: true });
+  };
+
+  const archiveGoal = () => {
+    if (archiveGoalId === null) return;
+    const goalName = goals.find((goal) => goal.id === archiveGoalId)?.name ?? "Goal";
+    setGoals((currentGoals) => currentGoals.filter((goal) => goal.id !== archiveGoalId));
+    setArchiveGoalId(null);
+    setActivityMessage(`${goalName} was archived.`);
   };
 
   const totalSaved = goals.reduce(
@@ -274,6 +283,7 @@ export function DashboardPage() {
               onViewMore={() => setHistoryGoalId(goal.id)}
               onEdit={() => setEditGoalId(goal.id)}
               onAddContribution={() => setContributionGoalId(goal.id)}
+              onArchive={() => setArchiveGoalId(goal.id)}
             />
           ))}
         </section>
@@ -319,6 +329,15 @@ export function DashboardPage() {
         tone="danger"
         onCancel={() => setIsSignOutOpen(false)}
         onConfirm={signOut}
+      />
+      <ConfirmtaionModal
+        isOpen={archiveGoalId !== null}
+        title="Archive completed goal?"
+        description="This goal will be removed from your active dashboard. Its history can be restored later when archive storage is connected."
+        confirmLabel="Archive goal"
+        tone="default"
+        onCancel={() => setArchiveGoalId(null)}
+        onConfirm={archiveGoal}
       />
     </main>
   );
