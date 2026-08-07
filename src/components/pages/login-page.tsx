@@ -2,16 +2,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Heart, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 import { loginClient } from "@/client/api/auth";
+import { getSpaceStatusClient } from "@/client/api/space";
 import { LoginForm } from "@/components/ui/login-form";
-import {
-  loginFormSchema,
-  type LoginFormValues,
-} from "@/schemas/auth-schema";
+import { loginFormSchema, type LoginFormValues } from "@/schemas/auth-schema";
 
 export function LoginPage() {
   const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -30,11 +30,22 @@ export function LoginPage() {
         email: values.email,
         password: values.password,
       });
-
-      setSuccessMessage(`Welcome back! You are signed in as ${values.email}.`);
     } catch {
       form.setError("root", {
-        message: "Unable to sign in. Check your email and password and try again.",
+        message:
+          "Unable to sign in. Check your email and password and try again.",
+      });
+      return;
+    }
+
+    try {
+      const { hasSpace } = await getSpaceStatusClient();
+
+      navigate(hasSpace ? "/dashboard" : "/partner-setup", { replace: true });
+    } catch {
+      form.setError("root", {
+        message:
+          "You are signed in, but we could not load your space. Please try again.",
       });
     }
   };
@@ -55,12 +66,16 @@ export function LoginPage() {
             <span className="text-rose-500"> together.</span>
           </h1>
           <p className="mt-6 max-w-lg text-lg leading-8 text-rose-950/60">
-            Share moments, make plans, and stay close to your favorite people—all in one warm little corner of the internet.
+            Share moments, make plans, and stay close to your favorite
+            people—all in one warm little corner of the internet.
           </p>
           <div className="mt-10 flex items-center gap-3 text-sm font-medium text-rose-950/50">
             <span className="flex -space-x-2" aria-hidden="true">
               {["bg-rose-300", "bg-pink-400", "bg-red-300"].map((color) => (
-                <span key={color} className={`flex size-9 items-center justify-center rounded-full border-2 border-white ${color}`}>
+                <span
+                  key={color}
+                  className={`flex size-9 items-center justify-center rounded-full border-2 border-white ${color}`}
+                >
                   <Heart className="size-4 fill-white text-white" />
                 </span>
               ))}
@@ -69,8 +84,15 @@ export function LoginPage() {
           </div>
         </section>
 
-        <section className="flex justify-center lg:justify-end" aria-label="Login">
-          <LoginForm form={form} onSubmit={handleLogin} successMessage={successMessage} />
+        <section
+          className="flex justify-center lg:justify-end"
+          aria-label="Login"
+        >
+          <LoginForm
+            form={form}
+            onSubmit={handleLogin}
+            successMessage={successMessage}
+          />
         </section>
       </div>
     </main>

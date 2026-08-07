@@ -28,6 +28,20 @@ export async function loginClient(
   return response.data;
 }
 
+export interface RefreshTokenResponse {
+  accessToken: string;
+}
+
+export async function refreshTokenClient(): Promise<RefreshTokenResponse> {
+  const response = await api.post<RefreshTokenResponse>(
+    "/auth/refresh",
+    undefined,
+    { withCredentials: true },
+  );
+
+  return response.data;
+}
+
 export interface SignUpPayload {
   fullName: string;
   email: string;
