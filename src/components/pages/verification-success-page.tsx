@@ -3,7 +3,7 @@ import { Check, CircleX, Heart, LoaderCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
-import { verifyAccountClient } from "@/client/api/auth";
+import { useVerifyAccountMutation } from "@/client/mutations/auth-mutations";
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ export function VerificationSuccessPage() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState("");
   const verificationStarted = useRef(false);
+  const { mutateAsync: verifyAccount } = useVerifyAccountMutation();
 
   useEffect(() => {
     if (verificationStarted.current) return;
@@ -30,7 +31,7 @@ export function VerificationSuccessPage() {
       return;
     }
 
-    void verifyAccountClient(token)
+    void verifyAccount(token)
       .then(() => setStatus("success"))
       .catch((error: unknown) => {
         const apiMessage = axios.isAxiosError<{ message?: string }>(error)
@@ -43,7 +44,7 @@ export function VerificationSuccessPage() {
         );
         setStatus("error");
       });
-  }, [searchParams]);
+  }, [searchParams, verifyAccount]);
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-pink-100 via-white to-rose-100 px-5 py-10 sm:px-8">

@@ -12,7 +12,7 @@ interface CreateSpaceResponse {
   inviteCode?: string;
 }
 
-interface CreateSpaceErrorResponse {
+interface SpaceErrorResponse {
   message: string;
 }
 
@@ -24,7 +24,7 @@ export async function createSpaceClient(payload: CreateSpacePayload) {
 
     return response.data;
   } catch (error: unknown) {
-    if (axios.isAxiosError<CreateSpaceErrorResponse>(error) && error.response) {
+    if (axios.isAxiosError<SpaceErrorResponse>(error) && error.response) {
       const { message } = error.response.data;
       throw new Error(message);
     }
@@ -65,7 +65,7 @@ export async function redeemInvitationClient(payload: RedeemInvitationPayload) {
 
     return response.data;
   } catch (error: unknown) {
-    if (axios.isAxiosError<CreateSpaceErrorResponse>(error) && error.response) {
+    if (axios.isAxiosError<SpaceErrorResponse>(error) && error.response) {
       const { message } = error.response.data;
       throw new Error(message);
     }
@@ -86,13 +86,14 @@ interface CreateInvitationResponse {
 export async function createInvitationClient(payload: CreateInvitationPayload) {
   try {
     const response = await api.post<CreateInvitationResponse>(
-      `/space/${payload}/invitations`,
+      `/space/${payload.spaceId}/invitations`,
+      undefined,
       { withCredentials: true },
     );
 
     return response.data;
   } catch (error: unknown) {
-    if (axios.isAxiosError<CreateSpaceErrorResponse>(error) && error.response) {
+    if (axios.isAxiosError<SpaceErrorResponse>(error) && error.response) {
       const { message } = error.response.data;
       throw new Error(message);
     }

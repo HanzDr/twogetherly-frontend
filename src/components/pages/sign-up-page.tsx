@@ -3,12 +3,13 @@ import { Heart, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
-import { signUpClient } from "@/client/api/auth";
+import { useSignUpMutation } from "@/client/mutations/auth-mutations";
 import { SignUpForm } from "@/components/ui/sign-up-form";
 import { signUpSchema, type signUpFormValues } from "@/schemas/auth-schema";
 
 export function SignUpPage() {
   const [successMessage, setSuccessMessage] = useState("");
+  const signUpMutation = useSignUpMutation();
   const form = useForm<signUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -25,7 +26,7 @@ export function SignUpPage() {
     form.clearErrors("root");
 
     try {
-      await signUpClient({
+      await signUpMutation.mutateAsync({
         fullName: values.name,
         email: values.email,
         password: values.password,

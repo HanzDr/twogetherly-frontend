@@ -58,6 +58,10 @@ export interface SignUpResponse {
   };
 }
 
+export interface AuthErrorResponse {
+  message: string;
+}
+
 export async function signUpClient(payload: SignUpPayload) {
   const response = await api.post<SignUpResponse>("/auth/sign-up", payload);
 
@@ -75,4 +79,25 @@ export async function verifyAccountClient(token: string) {
   });
 
   return response.data;
+}
+
+interface getCurrentUserResponse {
+  message: string;
+}
+
+export async function getCurrentUserClient() {
+  try {
+    const response = await api.get<getCurrentUserResponse>("/auth/me", {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError<AuthErrorResponse>(error) && error.response) {
+      const { message } = error.response.data;
+      throw new Error(message);
+    }
+
+    throw error;
+  }
 }

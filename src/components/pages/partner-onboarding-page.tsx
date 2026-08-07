@@ -10,7 +10,7 @@ import {
 import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createSpaceClient } from "@/client/api/space";
+import { useCreateSpaceMutation } from "@/client/mutations/space-mutations";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,6 +24,7 @@ type SetupMode = "choose" | "create" | "join";
 
 export function PartnerOnboardingPage() {
   const navigate = useNavigate();
+  const createSpaceMutation = useCreateSpaceMutation();
   const [mode, setMode] = useState<SetupMode>("choose");
   const [spaceName, setSpaceName] = useState("");
   const [partnerEmail, setPartnerEmail] = useState("");
@@ -55,7 +56,7 @@ export function PartnerOnboardingPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await createSpaceClient({
+      const response = await createSpaceMutation.mutateAsync({
         name: spaceName.trim(),
         partnerEmail: partnerEmail.trim(),
       });

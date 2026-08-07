@@ -1,17 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { Heart, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { loginClient } from "@/client/api/auth";
-import { getSpaceStatusClient } from "@/client/api/space";
+import { useLoginMutation } from "@/client/mutations/auth-mutations";
+import { spaceStatusQueryOptions } from "@/client/queries/space-queries";
 import { LoginForm } from "@/components/ui/login-form";
 import { loginFormSchema, type LoginFormValues } from "@/schemas/auth-schema";
 
 export function LoginPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const loginMutation = useLoginMutation();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -26,7 +29,7 @@ export function LoginPage() {
     form.clearErrors("root");
 
     try {
-      await loginClient({
+      await loginMutation.mutateAsync({
         email: values.email,
         password: values.password,
       });
@@ -39,7 +42,7 @@ export function LoginPage() {
     }
 
     try {
-      const { hasSpace } = await getSpaceStatusClient();
+      const { hasSpace } = await queryClient.fetchQuery(spaceStatusQueryOptions);
 
       navigate(hasSpace ? "/dashboard" : "/partner-setup", { replace: true });
     } catch {
