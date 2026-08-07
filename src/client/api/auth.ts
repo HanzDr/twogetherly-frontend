@@ -21,7 +21,9 @@ export interface LoginResponse {
 export async function loginClient(
   payload: LoginPayload,
 ): Promise<LoginResponse> {
-  const response = await api.post<LoginResponse>("/auth/login", payload);
+  const response = await api.post<LoginResponse>("/auth/login", payload, {
+    withCredentials: true,
+  });
 
   return response.data;
 }
@@ -48,12 +50,13 @@ export async function signUpClient(payload: SignUpPayload) {
   return response.data;
 }
 
-export interface verifyAccountResponse {
+export interface VerifyAccountResponse {
   mesage: string;
 }
 
-export async function verifyAccountClient() {
-  const response = await api.get<verifyAccountResponse>("/auth/sign-up", {
+export async function verifyAccountClient(token: string) {
+  const response = await api.get<VerifyAccountResponse>("/auth/verify-email", {
+    params: { token },
     withCredentials: true,
   });
 

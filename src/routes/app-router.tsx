@@ -1,12 +1,13 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { RootLayout } from "@/components/layouts/root-layout";
+import { DashboardPage } from "@/components/pages/dashboard-page";
 import { DiaryPage } from "@/components/pages/diary-page";
 import { LoginPage } from "@/components/pages/login-page";
 import { PartnerOnboardingPage } from "@/components/pages/partner-onboarding-page";
 import { ProfileSettingsPage } from "@/components/pages/profile-settings-page";
 import { SignUpPage } from "@/components/pages/sign-up-page";
-import { PartnerRequiredDashboard } from "@/components/routes/partner-required-dashboard";
+import { VerificationSuccessPage } from "@/components/pages/verification-success-page";
 
 export const appRouter = createBrowserRouter([
   {
@@ -26,8 +27,12 @@ export const appRouter = createBrowserRouter([
         element: <SignUpPage />,
       },
       {
+        path: "verify-email",
+        element: <VerificationSuccessPage />,
+      },
+      {
         path: "dashboard",
-        element: <PartnerRequiredDashboard />,
+        element: <DashboardPage />,
       },
       {
         path: "partner-setup",

@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Heart, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 import { signUpClient } from "@/client/api/auth";
 import { SignUpForm } from "@/components/ui/sign-up-form";
@@ -10,7 +9,6 @@ import { signUpSchema, type signUpFormValues } from "@/schemas/auth-schema";
 
 export function SignUpPage() {
   const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate();
   const form = useForm<signUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -27,15 +25,16 @@ export function SignUpPage() {
     form.clearErrors("root");
 
     try {
-      const response = await signUpClient({
+      await signUpClient({
         fullName: values.name,
         email: values.email,
         password: values.password,
       });
 
-      setSuccessMessage(response.message);
+      setSuccessMessage(
+        `Account created! We sent a verification email to ${values.email}. Please check your inbox and verify your account before signing in.`,
+      );
       sessionStorage.removeItem("twogetherly:partner-linked");
-      navigate("/partner-setup");
     } catch {
       form.setError("root", {
         message: "Unable to create your account. Please try again.",
