@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+import { signUpClient } from "@/client/api/auth";
 import { SignUpForm } from "@/components/ui/sign-up-form";
 import { signUpSchema, type signUpFormValues } from "@/schemas/auth-schema";
 
@@ -21,17 +22,25 @@ export function SignUpPage() {
     },
   });
 
-  const handleSignUp: SubmitHandler<signUpFormValues> = (values) => {
+  const handleSignUp: SubmitHandler<signUpFormValues> = async (values) => {
     setSuccessMessage("");
+    form.clearErrors("root");
 
-    // Replace this with the application's account creation API call.
-    console.info("Sign up submitted", {
-      name: values.name,
-      email: values.email,
-    });
-    setSuccessMessage(`Thanks, ${values.name}! Your account details were submitted.`);
-    sessionStorage.removeItem("twogetherly:partner-linked");
-    navigate("/partner-setup");
+    try {
+      const response = await signUpClient({
+        fullName: values.name,
+        email: values.email,
+        password: values.password,
+      });
+
+      setSuccessMessage(response.message);
+      sessionStorage.removeItem("twogetherly:partner-linked");
+      navigate("/partner-setup");
+    } catch {
+      form.setError("root", {
+        message: "Unable to create your account. Please try again.",
+      });
+    }
   };
 
   return (
@@ -50,13 +59,24 @@ export function SignUpPage() {
             <span className="text-rose-500"> together.</span>
           </h1>
           <p className="mt-6 text-lg leading-8 text-rose-950/60">
-            One account, one welcoming space, and countless ways to stay connected.
+            One account, one welcoming space, and countless ways to stay
+            connected.
           </p>
-          <Heart className="mt-10 size-12 fill-rose-400 text-rose-400" aria-hidden="true" />
+          <Heart
+            className="mt-10 size-12 fill-rose-400 text-rose-400"
+            aria-hidden="true"
+          />
         </section>
 
-        <section className="flex justify-center lg:justify-end" aria-label="Create an account">
-          <SignUpForm form={form} onSubmit={handleSignUp} successMessage={successMessage} />
+        <section
+          className="flex justify-center lg:justify-end"
+          aria-label="Create an account"
+        >
+          <SignUpForm
+            form={form}
+            onSubmit={handleSignUp}
+            successMessage={successMessage}
+          />
         </section>
       </div>
     </main>

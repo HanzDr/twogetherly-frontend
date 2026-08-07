@@ -3,6 +3,7 @@ import { Heart, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
+import { loginClient } from "@/client/api/auth";
 import { LoginForm } from "@/components/ui/login-form";
 import {
   loginFormSchema,
@@ -20,15 +21,22 @@ export function LoginPage() {
     },
   });
 
-  const handleLogin: SubmitHandler<LoginFormValues> = (values) => {
+  const handleLogin: SubmitHandler<LoginFormValues> = async (values) => {
     setSuccessMessage("");
+    form.clearErrors("root");
 
-    // Replace this with the application's authentication API call.
-    console.info("Login submitted", {
-      email: values.email,
-      rememberMe: values.rememberMe,
-    });
-    setSuccessMessage(`Welcome back! Login submitted for ${values.email}.`);
+    try {
+      await loginClient({
+        email: values.email,
+        password: values.password,
+      });
+
+      setSuccessMessage(`Welcome back! You are signed in as ${values.email}.`);
+    } catch {
+      form.setError("root", {
+        message: "Unable to sign in. Check your email and password and try again.",
+      });
+    }
   };
 
   return (

@@ -1,0 +1,61 @@
+import axios from "axios";
+
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+});
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+}
+
+export async function loginClient(
+  payload: LoginPayload,
+): Promise<LoginResponse> {
+  const response = await api.post<LoginResponse>("/auth/login", payload);
+
+  return response.data;
+}
+
+export interface SignUpPayload {
+  fullName: string;
+  email: string;
+  password: string;
+}
+
+export interface SignUpResponse {
+  message: string;
+  user: {
+    id: string;
+    fullName: string;
+    email: string;
+    createdAt: string;
+  };
+}
+
+export async function signUpClient(payload: SignUpPayload) {
+  const response = await api.post<SignUpResponse>("/auth/sign-up", payload);
+
+  return response.data;
+}
+
+export interface verifyAccountResponse {
+  mesage: string;
+}
+
+export async function verifyAccountClient() {
+  const response = await api.get<verifyAccountResponse>("/auth/sign-up", {
+    withCredentials: true,
+  });
+
+  return response.data;
+}

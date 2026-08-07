@@ -125,6 +125,12 @@ export function SignUpForm({ form, onSubmit, successMessage }: SignUpFormProps) 
             )}
           </div>
 
+          {errors.root && (
+            <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+              {errors.root.message}
+            </p>
+          )}
+
           {successMessage && (
             <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700" role="status">
               {successMessage}
