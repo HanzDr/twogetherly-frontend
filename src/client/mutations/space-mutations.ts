@@ -14,6 +14,6 @@ export function useRedeemInvitationMutation() {
   return useMutation({ mutationFn: redeemInvitationClient });
 }
 
-export function useCreateInvitationMutation() {
+export function useCreateInviteMutation() {
   return useMutation({ mutationFn: createInvitationClient });
 }

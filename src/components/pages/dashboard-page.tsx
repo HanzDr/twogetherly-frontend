@@ -2,6 +2,7 @@ import { Heart, LogOut, Plus, Target, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { useSpaceStatusQuery } from "@/client/queries/space-queries";
 import { AddContributionModal } from "@/components/ui/add-contribution-modal";
 import { Button } from "@/components/ui/button";
 import { CreateGoal } from "@/components/ui/create-goal";
@@ -125,6 +126,7 @@ function readFileAsDataUrl(file: File) {
 
 export function DashboardPage() {
   const navigate = useNavigate();
+  const { data: spaceStatus } = useSpaceStatusQuery();
   const partnerName = "Freiz";
   const [goals, setGoals] = useState(initialGoals);
   const [isCreateGoalOpen, setIsCreateGoalOpen] = useState(false);
@@ -408,6 +410,7 @@ export function DashboardPage() {
       />
       <InvitePartnerModal
         isOpen={isInviteOpen}
+        spaceId={spaceStatus?.spaceId ?? ""}
         onClose={() => setIsInviteOpen(false)}
         onComplete={setActivityMessage}
       />

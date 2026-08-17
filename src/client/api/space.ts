@@ -35,6 +35,7 @@ export async function createSpaceClient(payload: CreateSpacePayload) {
 
 interface GetSpaceStatusResponse {
   hasSpace: boolean;
+  spaceId?: string;
 }
 
 export async function getSpaceStatusClient() {
@@ -97,5 +98,45 @@ export async function createInvitationClient(payload: CreateInvitationPayload) {
       const { message } = error.response.data;
       throw new Error(message);
     }
+
+    throw error;
+  }
+}
+
+export interface GetSpaceDetailsPayload {
+  spaceId: string;
+}
+
+export interface GetSpaceDetailsResponse {
+  id: string;
+  name: string;
+  invitedPartnerEmail: string | null;
+  createdAt: string;
+  updatedAt: string;
+  users: {
+    joinedAt: string;
+    user: {
+      email: string;
+      id: string;
+      fullName: string;
+      emailVerifiedAt: string | null;
+    };
+  }[];
+}
+
+export async function getSpaceDetailsClient(payload: GetSpaceDetailsPayload) {
+  try {
+    const response = await api.get<GetSpaceDetailsResponse | null>(
+      `/space/${payload.spaceId}`,
+      { withCredentials: true },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError<SpaceErrorResponse>(error) && error.response) {
+      const { message } = error.response.data;
+      throw new Error(message);
+    }
+
+    throw error;
   }
 }

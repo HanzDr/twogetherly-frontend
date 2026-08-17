@@ -3,6 +3,7 @@ import { Copy, KeyRound, Mail, RefreshCw, Send, UserPlus, X } from "lucide-react
 import { useEffect, useState } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 
+import { useCreateInviteMutation } from "@/client/mutations/space-mutations";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { invitePartnerFormSchema, type InvitePartnerFormValues } from "@/schemas/linking-schema";
@@ -11,23 +12,20 @@ type InviteMode = "email" | "code";
 
 type InvitePartnerModalProps = {
   isOpen: boolean;
+  spaceId: string;
   onClose: () => void;
   onComplete: (message: string) => void;
 };
 
-function generateInviteCode() {
-  const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const suffix = Array.from({ length: 6 }, () => characters[Math.floor(Math.random() * characters.length)]).join("");
-  return `TGLY-${suffix}`;
-}
-
 export function InvitePartnerModal({
   isOpen,
+  spaceId,
   onClose,
   onComplete,
 }: InvitePartnerModalProps) {
   const [copied, setCopied] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState(generateInviteCode);
+  const [generatedCode, setGeneratedCode] = useState("");
+  const createInviteMutation = useCreateInviteMutation();
   const form = useForm<InvitePartnerFormValues>({
     resolver: zodResolver(invitePartnerFormSchema),
     defaultValues: { mode: "email", email: "", inviteCode: "" },
@@ -58,9 +56,12 @@ export function InvitePartnerModal({
 
   const changeMode = (nextMode: InviteMode) => {
     setValue("mode", nextMode);
-    if (nextMode === "code") setValue("inviteCode", generatedCode);
     clearErrors();
     setCopied(false);
+
+    if (nextMode === "code" && !generatedCode) {
+      void createInvite();
+    }
   };
 
   const copyCode = async () => {
@@ -68,11 +69,19 @@ export function InvitePartnerModal({
     setCopied(true);
   };
 
-  const regenerateCode = () => {
-    const nextCode = generateInviteCode();
-    setGeneratedCode(nextCode);
-    setValue("inviteCode", nextCode);
+  const createInvite = async () => {
     setCopied(false);
+
+    if (!spaceId) return;
+
+    try {
+      const response = await createInviteMutation.mutateAsync({ spaceId });
+      setGeneratedCode(response.code);
+      setValue("inviteCode", response.code);
+    } catch {
+      setGeneratedCode("");
+      setValue("inviteCode", "");
+    }
   };
 
   return (
@@ -105,13 +114,16 @@ export function InvitePartnerModal({
               <div className="rounded-2xl border border-rose-100 bg-rose-50 p-6 text-center">
                 <span className="mx-auto flex size-11 items-center justify-center rounded-xl bg-white text-rose-600 shadow-sm"><KeyRound aria-hidden="true" /></span>
                 <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-rose-500">Your generated invite code</p>
-                <p className="mt-2 text-2xl font-semibold tracking-[0.18em] text-rose-950">{generatedCode}</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[0.18em] text-rose-950">
+                  {createInviteMutation.isPending ? "Generating..." : generatedCode || "Code unavailable"}
+                </p>
                 <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-rose-950/50">Send this code to your partner. They can paste it into the join screen on their device.</p>
                 <input type="hidden" {...register("inviteCode")} />
                 <div className="mt-5 flex flex-wrap justify-center gap-2">
-                  <Button type="button" className="bg-rose-500 text-white hover:bg-rose-600" onClick={() => void copyCode()}><Copy /> {copied ? "Copied!" : "Copy code"}</Button>
-                  <Button type="button" variant="outline" className="border-rose-200 bg-white text-rose-700" onClick={regenerateCode}><RefreshCw /> New code</Button>
+                  <Button type="button" disabled={!generatedCode || createInviteMutation.isPending} className="bg-rose-500 text-white hover:bg-rose-600" onClick={() => void copyCode()}><Copy /> {copied ? "Copied!" : "Copy code"}</Button>
+                  <Button type="button" disabled={!spaceId || createInviteMutation.isPending} variant="outline" className="border-rose-200 bg-white text-rose-700" onClick={() => void createInvite()}><RefreshCw /> New code</Button>
                 </div>
+                {createInviteMutation.error && <p className="mt-3 text-sm text-red-600" role="alert">{createInviteMutation.error.message}</p>}
                 {errors.inviteCode && <p className="mt-3 text-sm text-red-600" role="alert">{errors.inviteCode.message}</p>}
               </div>
             )}
